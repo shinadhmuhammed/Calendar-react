@@ -30,7 +30,7 @@ const Login: React.FC = () => {
       });
 
       if (response.status === 200) {
-        navigate("/outlook");
+        navigate("/calendar");
         localStorage.setItem("token", response.data.token);
       } else {
         setError("Login failed. Please try again.");
