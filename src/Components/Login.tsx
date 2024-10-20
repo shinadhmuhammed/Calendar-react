@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import createAxios from "../Services/Axios";
+import { loginUser } from "../API/LoginAPI";
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -23,21 +23,16 @@ const Login: React.FC = () => {
     e.preventDefault();
 
     try {
-      const axiosInstance = createAxios();
-      const response = await axiosInstance.post("/login", {
-        email: formData.email,
-        password: formData.password,
-      });
-
+      const response = await loginUser(formData.email, formData.password);
       if (response.status === 200) {
         navigate("/calendar");
         localStorage.setItem("token", response.data.token);
       } else {
         setError("Login failed. Please try again.");
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       setError("An error occurred. Please try again later.");
+      console.log(error);
     }
   };
 
@@ -90,6 +85,15 @@ const Login: React.FC = () => {
             Login
           </button>
         </form>
+        <p className="text-sm text-gray-600">
+          Don't have an account?
+          <a
+            href="/signup"
+            className="text-blue-600 hover:text-blue-700 font-medium"
+          >
+            Register
+          </a>
+        </p>
       </div>
     </div>
   );

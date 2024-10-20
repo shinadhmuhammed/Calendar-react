@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
-
 import createAxios from '../../Services/Axios'; 
 import EditTask from './EditTask';
+import { Task} from '../../Types/Type'; 
 
 interface TaskModalProps {
-  tasks: any[];  
+  tasks: Task[];  
   selectedDate: string | null;  
   onClose: () => void;  
   onTaskDeleted: () => void; 
 }
 
 const UserTask: React.FC<TaskModalProps> = ({ tasks, selectedDate, onClose, onTaskDeleted }) => {
-  const [editingTask, setEditingTask] = useState<any | null>(null);
+  const [editingTask, setEditingTask] = useState<Task | null>(null); 
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
   const axiosInstance = createAxios(); 
 
-  const handleEditClick = (task: any) => {
+  const handleEditClick = (task: Task) => {
     setEditingTask(task);
     setShowEditModal(true);
   };
@@ -52,7 +52,7 @@ const UserTask: React.FC<TaskModalProps> = ({ tasks, selectedDate, onClose, onTa
                 <div className="text-sm text-gray-500">Assigned by: {task.createdBy.username}</div>
                 <div className="flex justify-between mt-2">
                   <button
-                    onClick={() => handleEditClick(task)} // Handle edit click
+                    onClick={() => handleEditClick(task)} 
                     className="bg-blue-500 text-white py-1 px-2 rounded"
                   >
                     Edit

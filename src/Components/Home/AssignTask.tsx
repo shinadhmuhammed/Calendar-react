@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import createAxios from '../../Services/Axios';
+import { Employee } from '../../Types/Type'; 
 
 interface AssignTaskProps {
   selectedDate: string;
-  employees: any[];  
+  employees: Employee[];  
   onTaskAssigned: () => void; 
 }
 

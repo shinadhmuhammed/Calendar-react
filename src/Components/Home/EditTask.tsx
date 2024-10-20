@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import createAxios from '../../Services/Axios';
+import { Task } from '../../Types/Type'; 
 
 interface EditTaskModalProps {
-  task: any; 
+  task: Task; 
   onClose: () => void; 
   onTaskUpdated: () => void; 
 }
 
 const EditTask: React.FC<EditTaskModalProps> = ({ task, onClose, onTaskUpdated }) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState(task.title);
+  const [description, setDescription] = useState(task.description);
   const axiosInstance = createAxios();
 
   useEffect(() => {

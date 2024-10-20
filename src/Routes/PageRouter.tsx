@@ -1,11 +1,9 @@
-import React, { Suspense, lazy } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import React, { Suspense, lazy } from "react";
+import { Route, Routes } from "react-router-dom";
 
-
-
-const LoginPage = lazy(() => import('../Pages/LoginPage'));
-const RegisterPage=lazy(()=> import('../Pages/RegisterPage'))
-const CalendarPage=lazy(()=> import ('../Pages/CalenderPage'))
+const LoginPage = lazy(() => import("../Pages/LoginPage"));
+const RegisterPage = lazy(() => import("../Pages/RegisterPage"));
+const CalendarPage = lazy(() => import("../Pages/CalenderPage"));
 
 const PageRouter = React.memo(() => {
   return (

@@ -2,24 +2,24 @@ import React, { useEffect, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import createAxios from '../../Services/Axios';
 import AssignTask from './AssignTask';
 import UserTask from './UserTask';
+import { Event, Employee, Task } from '../../Types/Type'; 
+import CalendarAPI from '../../API/CalenderAPI';
 
 const Calendar: React.FC = () => {
-  const [events, setEvents] = useState<any[]>([]);
-  const [employees, setEmployees] = useState<any[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [userTasks, setUserTasks] = useState<any[]>([]);  
+  const [userTasks, setUserTasks] = useState<Task[]>([]);  
   const [showTaskModal, setShowTaskModal] = useState<boolean>(false);  
   const [userRole, setUserRole] = useState<string | null>(null); 
-  const axiosInstance = createAxios();
 
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await axiosInstance.get('/employees');
-        setEmployees(response.data);
+        const employeesData = await CalendarAPI.fetchEmployees();
+        setEmployees(employeesData);
       } catch (error) {
         console.error('Error fetching employees:', error);
       }
@@ -27,9 +27,8 @@ const Calendar: React.FC = () => {
 
     const fetchUserRole = async () => { 
       try {
-        const response = await axiosInstance.get('/user/role'); 
-        console.log(response.data.role,'role')
-        setUserRole(response.data.role); 
+        const userRoleData = await CalendarAPI.fetchUserRole(); 
+        setUserRole(userRoleData.role); 
       } catch (error) {
         console.error('Error fetching user role:', error);
       }
@@ -42,8 +41,8 @@ const Calendar: React.FC = () => {
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axiosInstance.get('/getTasks');
-        setEvents(response.data);
+        const tasksData = await CalendarAPI.fetchTasks(); 
+        setEvents(tasksData);
       } catch (error) {
         console.error('Error fetching tasks:', error);
       }
@@ -52,29 +51,32 @@ const Calendar: React.FC = () => {
     fetchTasks();
   }, []);
 
-  const handleDateClick = async (arg: any) => {
+  const handleDateClick = async (arg: { dateStr: string }) => { 
     const clickedDate = arg.dateStr;
     setSelectedDate(clickedDate);
 
     try {
-      const response = await axiosInstance.get('/tasks/my-tasks');
-      const allTasks = response.data;
-      const filteredTasks = allTasks.filter((task: any) => {
-        const taskDate = new Date(task.date).toISOString().split('T')[0];  // Get date part from task
+      const allTasks = await CalendarAPI.fetchUserTasks(); 
+      const filteredTasks = allTasks.filter((task) => {
+        const taskDate = new Date(task.date).toISOString().split('T')[0];  
         return taskDate === clickedDate;  
       });
 
-      setUserTasks(filteredTasks);  // Set only the tasks for the clicked date
-      setShowTaskModal(true);  // Open the modal
+      setUserTasks(filteredTasks); 
+      setShowTaskModal(true);  
     } catch (error) {
       console.error('Error fetching user tasks:', error);
     }
   };
 
   const handleTaskAssigned = async () => {
-    const response = await axiosInstance.get('/tasks');
-    setEvents(response.data);
-    setSelectedDate(null);  
+    try {
+      const tasksData = await CalendarAPI.fetchAllTasks();
+      setEvents(tasksData);
+      setSelectedDate(null);  
+    } catch (error) {
+      console.error('Error fetching all tasks:', error);
+    }
   };
 
   const handleCloseTaskModal = () => {
@@ -100,9 +102,10 @@ const Calendar: React.FC = () => {
 
       {showTaskModal && (
         <UserTask
-          tasks={userTasks}  
+          tasks={userTasks}
           selectedDate={selectedDate}
-          onClose={handleCloseTaskModal}
+          onClose={handleCloseTaskModal} 
+          onTaskDeleted={() => {}} 
         />
       )}
     </div>

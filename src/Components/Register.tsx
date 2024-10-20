@@ -1,50 +1,39 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import createAxios from "../Services/Axios";
+import { Manager, RegisterFormData } from "../Types/Type";
+import { fetchManagers, registerUser } from "../API/RegisterAPI";
 
-interface Manager {
-    _id: string;
-    username: string;
-  }
 
 const Register: React.FC = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RegisterFormData>({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
-    role: "Employee",
+    role: "Employee", 
     managerId: "",
   });
 
-  const [managers, setManagers] = useState<{ id: string; name: string }[]>([]); 
+  const [managers, setManagers] = useState<Manager[]>([]);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
- 
+  
   useEffect(() => {
-    const fetchManagers = async () => {
+    const loadManagers = async () => {
       try {
-        const axiosInstance = createAxios();
-        const response = await axiosInstance.get("/manager"); 
-        console.log(response,'hello')
-        const managerData = response.data.map((manager:Manager) => ({
-          id: manager._id,
-          name: manager.username, 
-        }));
-        setManagers(managerData);
+        const fetchedManagers = await fetchManagers();
+        setManagers(fetchedManagers);
       } catch (error) {
-        console.error("Error fetching managers", error);
+        setError("Failed to load managers. Please try again later.");
+        console.log(error)
       }
     };
+    loadManagers();
+  }, []);
 
-    fetchManagers();
-  }, []); 
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -52,14 +41,17 @@ const Register: React.FC = () => {
     });
   };
 
+ 
   const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedRole = e.target.value as "Employee" | "Manager"; 
     setFormData({
       ...formData,
-      role: e.target.value,
-      managerId: e.target.value === "Manager" ? "" : formData.managerId,
+      role: selectedRole,
+      managerId: selectedRole === "Manager" ? "" : formData.managerId, 
     });
   };
 
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -69,27 +61,18 @@ const Register: React.FC = () => {
     }
 
     try {
-      const axiosInstance = createAxios();
-      const response = await axiosInstance.post("/signup", {
-        name: formData.username,
-        email: formData.email,
-        password: formData.password,
-        role: formData.role,
-        managerId: formData.role === "Employee" ? formData.managerId : undefined,
-      });
-      console.log(response);
-   
+      await registerUser(formData); 
+      navigate("/"); 
     } catch (error) {
       setError("An error occurred. Please try again later.");
+      console.error(error);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold text-center mb-4">
-          Create an Account
-        </h2>
+        <h2 className="text-2xl font-semibold text-center mb-4">Create an Account</h2>
         {error && <div className="mb-4 text-red-600">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -199,6 +182,12 @@ const Register: React.FC = () => {
             Register
           </button>
         </form>
+        <p className="text-sm text-gray-600">
+          Already have an account?{" "}
+          <a href="/" className="text-blue-600 hover:text-blue-700 font-medium">
+            Login
+          </a>
+        </p>
       </div>
     </div>
   );
