@@ -6,6 +6,7 @@ import AssignTask from './AssignTask';
 import UserTask from './UserTask';
 import { Event, Employee, Task } from '../../Types/Type'; 
 import CalendarAPI from '../../API/CalenderAPI';
+import { useNavigate } from 'react-router-dom';
 
 const Calendar: React.FC = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -14,6 +15,7 @@ const Calendar: React.FC = () => {
   const [userTasks, setUserTasks] = useState<Task[]>([]);  
   const [showTaskModal, setShowTaskModal] = useState<boolean>(false);  
   const [userRole, setUserRole] = useState<string | null>(null); 
+  const navigate=useNavigate()
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -83,8 +85,20 @@ const Calendar: React.FC = () => {
     setShowTaskModal(false);
   };
 
+ 
+  const handleLogout = () => {
+    localStorage.removeItem('token'); 
+    navigate('/')
+  };
+
   return (
     <div className="p-6">
+      <button
+        onClick={handleLogout}
+        className="bg-red-500 text-white py-2 px-4 rounded mb-4"
+      >
+        Logout
+      </button>
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
