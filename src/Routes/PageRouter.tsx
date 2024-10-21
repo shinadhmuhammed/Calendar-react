@@ -10,8 +10,8 @@ const PageRouter = React.memo(() => {
     <div>
       <Suspense fallback={<div>Loading...</div>}>
         <Routes>
-          <Route path="/" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={<RegisterPage />} />
           <Route path="/calendar" element={<CalendarPage />} />
         </Routes>
       </Suspense>
