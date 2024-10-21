@@ -1,49 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import createAxios from '../../Services/Axios';
-import { Employee } from '../../Types/Type'; 
+import React, { useState, useEffect } from "react";
+import createAxios from "../../Services/Axios";
+import { Employee } from "../../Types/Type";
 
 interface AssignTaskProps {
   selectedDate: string;
-  employees: Employee[];  
-  onTaskAssigned: () => void; 
+  employees: Employee[];
+  onTaskAssigned: () => void;
+  onClose: () => void;  // New onClose prop for closing the modal
 }
 
-const AssignTask: React.FC<AssignTaskProps> = ({ selectedDate, employees, onTaskAssigned }) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');  
-  const [assignedTo, setAssignedTo] = useState('');
+const AssignTask: React.FC<AssignTaskProps> = ({
+  selectedDate,
+  employees,
+  onTaskAssigned,
+  onClose, // Destructure onClose prop
+}) => {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [assignedTo, setAssignedTo] = useState("");
   const [error, setError] = useState<string | null>(null);
   const axiosInstance = createAxios();
 
   useEffect(() => {
-    const modal = document.getElementById('assign-task-modal');
+    const modal = document.getElementById("assign-task-modal");
     if (modal) modal.focus();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title || !description || !assignedTo) {  
-      setError('Please provide a task title, description, and select an employee');
+    if (!title || !description || !assignedTo) {
+      setError(
+        "Please provide a task title, description, and select an employee"
+      );
       return;
     }
 
     try {
-      const response = await axiosInstance.post('/tasks', {
+      const response = await axiosInstance.post("/tasks", {
         title,
-        description,  
+        description,
         date: selectedDate,
-        assignedTo, 
+        assignedTo,
       });
       console.log(response.data);
-      onTaskAssigned(); 
+      onTaskAssigned();  // Close the modal when task is assigned
     } catch (error) {
-      console.error('Error assigning task:', error);
-      setError('Failed to assign task.');
+      console.error("Error assigning task:", error);
+      setError("Failed to assign task.");
     }
   };
 
-  const handleCloseModal = () => {
-    onTaskAssigned();  
+  const handleCancelClick = () => {
+    onClose();  // Close the modal when cancel is clicked
   };
 
   return (
@@ -53,11 +61,15 @@ const AssignTask: React.FC<AssignTaskProps> = ({ selectedDate, employees, onTask
       tabIndex={-1}
     >
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative z-50">
-        <h2 className="text-xl font-semibold mb-4">Assign Task for {selectedDate}</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          Assign Task for {selectedDate}
+        </h2>
         {error && <div className="text-red-500 mb-4">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Task Title:</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Task Title:
+            </label>
             <input
               type="text"
               value={title}
@@ -67,17 +79,21 @@ const AssignTask: React.FC<AssignTaskProps> = ({ selectedDate, employees, onTask
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Task Description:</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Task Description:
+            </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              rows={4}  
+              rows={4}
               required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Assign to Employee:</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Assign to Employee:
+            </label>
             <select
               value={assignedTo}
               onChange={(e) => setAssignedTo(e.target.value)}
@@ -95,7 +111,7 @@ const AssignTask: React.FC<AssignTaskProps> = ({ selectedDate, employees, onTask
           <div className="flex justify-end space-x-4">
             <button
               type="button"
-              onClick={handleCloseModal}
+              onClick={handleCancelClick}  // Use handleCancelClick here
               className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded"
             >
               Cancel

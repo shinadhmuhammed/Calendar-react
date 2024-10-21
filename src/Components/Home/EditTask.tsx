@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import createAxios from '../../Services/Axios';
-import { Task } from '../../Types/Type'; 
+import React, { useState, useEffect } from "react";
+import createAxios from "../../Services/Axios";
+import { Task } from "../../Types/Type";
 
 interface EditTaskModalProps {
-  task: Task; 
-  onClose: () => void; 
-  onTaskUpdated: () => void; 
+  task: Task;
+  onClose: () => void;
+  onTaskUpdated: () => void;
 }
 
-const EditTask: React.FC<EditTaskModalProps> = ({ task, onClose, onTaskUpdated }) => {
+const EditTask: React.FC<EditTaskModalProps> = ({
+  task,
+  onClose,
+  onTaskUpdated,
+}) => {
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
   const axiosInstance = createAxios();
@@ -26,9 +30,9 @@ const EditTask: React.FC<EditTaskModalProps> = ({ task, onClose, onTaskUpdated }
         title,
         description,
       });
-      onTaskUpdated(); 
+      onTaskUpdated();
     } catch (error) {
-      console.error('Error updating task:', error);
+      console.error("Error updating task:", error);
     }
   };
 
@@ -41,7 +45,9 @@ const EditTask: React.FC<EditTaskModalProps> = ({ task, onClose, onTaskUpdated }
         <h2 className="text-xl font-semibold mb-4">Edit Task</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Task Title:</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Task Title:
+            </label>
             <input
               type="text"
               value={title}
@@ -51,12 +57,14 @@ const EditTask: React.FC<EditTaskModalProps> = ({ task, onClose, onTaskUpdated }
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Task Description:</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Task Description:
+            </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              rows={4}  
+              rows={4}
               required
             />
           </div>

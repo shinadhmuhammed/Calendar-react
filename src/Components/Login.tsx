@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../API/LoginAPI";
+import axios from "axios";
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -21,6 +22,11 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    if (!formData.email.includes("@")) {
+      setError("Invalid email format.");
+      return;
+    }
 
     try {
       const response = await loginUser(formData.email, formData.password);
@@ -28,10 +34,21 @@ const Login: React.FC = () => {
         navigate("/calendar");
         localStorage.setItem("token", response.data.token);
       } else {
-        setError("Login failed. Please try again.");
+        const message =
+          response.data.message || "Login failed. Please try again.";
+        setError(message);
       }
-    } catch (error) {
-      setError("An error occurred. Please try again later.");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        setError(
+          error.response?.data.message ||
+            "An error occurred. Please try again later."
+        );
+      } else if (error instanceof Error) {
+        setError(error.message || "An error occurred. Please try again later.");
+      } else {
+        setError("An unknown error occurred. Please try again later.");
+      }
       console.log(error);
     }
   };

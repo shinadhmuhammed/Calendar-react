@@ -19,10 +19,11 @@ const CalendarAPI = {
     return response.data;
   },
 
-  fetchUserTasks: async (): Promise<Task[]> => {
-    const response = await axiosInstance.get<Task[]>('/tasks/my-tasks');
-    return response.data;
-  },
+  fetchUserTasks: async (role: string): Promise<Task[]> => {
+  const endpoint = role === 'Manager' ? '/tasks/manager-tasks' : '/tasks/my-tasks';
+  const response = await axiosInstance.get<Task[]>(endpoint);
+  return response.data;
+},
 
   fetchAllTasks: async (): Promise<Event[]> => {
     const response = await axiosInstance.get<Event[]>('/tasks');

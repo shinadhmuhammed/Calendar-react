@@ -8,6 +8,7 @@ export interface Employee {
 }
 
 export interface Task {
+  assignedTo: Employee;
   date: string | number | Date;
   _id: string;
   title: string;

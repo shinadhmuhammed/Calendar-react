@@ -1,19 +1,26 @@
-import React, { useState } from 'react';
-import createAxios from '../../Services/Axios'; 
-import EditTask from './EditTask';
-import { Task} from '../../Types/Type'; 
+import React, { useState } from "react";
+import createAxios from "../../Services/Axios";
+import EditTask from "./EditTask";
+import { Task } from "../../Types/Type";
 
 interface TaskModalProps {
-  tasks: Task[];  
-  selectedDate: string | null;  
-  onClose: () => void;  
-  onTaskDeleted: () => void; 
+  tasks: Task[];
+  selectedDate: string | null;
+  onClose: () => void;
+  onTaskDeleted: () => void;
+  userRole: string;
 }
 
-const UserTask: React.FC<TaskModalProps> = ({ tasks, selectedDate, onClose, onTaskDeleted }) => {
-  const [editingTask, setEditingTask] = useState<Task | null>(null); 
+const UserTask: React.FC<TaskModalProps> = ({
+  tasks,
+  selectedDate,
+  onClose,
+  onTaskDeleted,
+  userRole,
+}) => {
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
-  const axiosInstance = createAxios(); 
+  const axiosInstance = createAxios();
 
   const handleEditClick = (task: Task) => {
     setEditingTask(task);
@@ -26,12 +33,12 @@ const UserTask: React.FC<TaskModalProps> = ({ tasks, selectedDate, onClose, onTa
   };
 
   const handleDeleteClick = async (taskId: string) => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
+    if (window.confirm("Are you sure you want to delete this task?")) {
       try {
         await axiosInstance.delete(`/tasks/${taskId}`);
-        onTaskDeleted(); 
+        onTaskDeleted();
       } catch (error) {
-        console.error('Error deleting task:', error);
+        console.error("Error deleting task:", error);
       }
     }
   };
@@ -43,26 +50,35 @@ const UserTask: React.FC<TaskModalProps> = ({ tasks, selectedDate, onClose, onTa
     >
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full relative z-50">
         <h2 className="text-xl font-semibold mb-4">Tasks for {selectedDate}</h2>
-        
+
         {tasks.length > 0 ? (
           <ul className="list-disc pl-5">
             {tasks.map((task) => (
               <li key={task._id} className="mb-2">
                 <strong>{task.title}</strong> - {task.description}
-                <div className="text-sm text-gray-500">Assigned by: {task.createdBy.username}</div>
+                <div className="text-sm text-gray-500">
+                  Assigned by: {task.createdBy.username}
+                  {userRole === "Manager" && (
+                    <span> | Assigned to: {task.assignedTo.username}</span>
+                  )}
+                </div>
                 <div className="flex justify-between mt-2">
-                  <button
-                    onClick={() => handleEditClick(task)} 
-                    className="bg-blue-500 text-white py-1 px-2 rounded"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteClick(task._id)} 
-                    className="bg-red-500 text-white py-1 px-2 rounded"
-                  >
-                    Delete
-                  </button>
+                  {userRole !== "Employee" && (
+                    <>
+                      <button
+                        onClick={() => handleEditClick(task)}
+                        className="bg-blue-500 text-white py-1 px-2 rounded"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(task._id)}
+                        className="bg-red-500 text-white py-1 px-2 rounded"
+                      >
+                        Delete
+                      </button>
+                    </>
+                  )}
                 </div>
               </li>
             ))}
@@ -87,7 +103,7 @@ const UserTask: React.FC<TaskModalProps> = ({ tasks, selectedDate, onClose, onTa
           onClose={handleCloseEditModal}
           onTaskUpdated={() => {
             handleCloseEditModal();
-            onTaskDeleted(); 
+            onTaskDeleted();
           }}
         />
       )}
