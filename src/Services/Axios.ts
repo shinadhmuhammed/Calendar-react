@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const createAxios = () => {
   const axiosInstance = axios.create({
-    baseURL: 'http://localhost:3000/',  
+    baseURL: 'https://calendar-nodejs.onrender.com/',  
     headers: {
       'Content-Type': 'application/json',
     },
