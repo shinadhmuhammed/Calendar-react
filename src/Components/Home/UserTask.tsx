@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 import createAxios from "../../Services/Axios";
 import EditTask from "./EditTask";
 import { Task } from "../../Types/Type";
@@ -12,15 +13,20 @@ interface TaskModalProps {
 }
 
 const UserTask: React.FC<TaskModalProps> = ({
-  tasks,
+  tasks: initialTasks,
   selectedDate,
   onClose,
   onTaskDeleted,
   userRole,
 }) => {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
   const axiosInstance = createAxios();
+
+  useEffect(() => {
+    setTasks(initialTasks);
+  }, [initialTasks]);
 
   const handleEditClick = (task: Task) => {
     setEditingTask(task);
@@ -33,14 +39,34 @@ const UserTask: React.FC<TaskModalProps> = ({
   };
 
   const handleDeleteClick = async (taskId: string) => {
-    if (window.confirm("Are you sure you want to delete this task?")) {
-      try {
-        await axiosInstance.delete(`/tasks/${taskId}`);
-        onTaskDeleted();
-      } catch (error) {
-        console.error("Error deleting task:", error);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axiosInstance.delete(`/tasks/${taskId}`);
+          Swal.fire("Deleted!", "Your task has been deleted.", "success");
+          setTasks((prevTasks) =>
+            prevTasks.filter((task) => task._id !== taskId)
+          );
+
+          onTaskDeleted();
+        } catch (error) {
+          Swal.fire(
+            "Error!",
+            "Error deleting task. Please try again.",
+            "error"
+          );
+          console.error("Error deleting task:", error);
+        }
       }
-    }
+    });
   };
 
   return (
@@ -57,11 +83,14 @@ const UserTask: React.FC<TaskModalProps> = ({
               <li key={task._id} className="mb-2">
                 <strong>{task.title}</strong> - {task.description}
                 <div className="text-sm text-gray-500">
-                  Assigned by: {task.createdBy.username}
-                  {userRole === "Manager" && (
-                    <span> | Assigned to: {task.assignedTo.username}</span>
-                  )}
-                </div>
+  {userRole === "Employee" && (
+    <span>Assigned by: {task.createdBy.username}</span>
+  )}
+  {userRole === "Manager" && (
+    <span>Assigned to: {task.assignedTo.username}</span>
+  )}
+</div>
+
                 <div className="flex justify-between mt-2">
                   {userRole !== "Employee" && (
                     <>

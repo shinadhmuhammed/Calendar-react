@@ -54,8 +54,11 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+    <div className="min-h-screen flex items-center justify-center bg-gray-800">
+      <div className="w-full max-w-md p-6 bg-slate-400 rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          Welcome to task assignment application
+        </h1>
         <h2 className="text-2xl font-semibold text-center mb-4">Login</h2>
         {error && <div className="mb-4 text-red-600">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">

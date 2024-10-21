@@ -17,6 +17,7 @@ const Calendar: React.FC = () => {
   const [userRole, setUserRole] = useState<string | null>(null); 
   const navigate = useNavigate();
 
+  // Fetch employees and user role when component mounts
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -40,6 +41,7 @@ const Calendar: React.FC = () => {
     fetchUserRole();
   }, []);
 
+  // Fetch all tasks and set events in the calendar when the component mounts
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -53,6 +55,7 @@ const Calendar: React.FC = () => {
     fetchTasks();
   }, []);
 
+  // Handle date click and fetch tasks for that specific date
   const handleDateClick = async (arg: { dateStr: string }) => { 
     const clickedDate = arg.dateStr;
     setSelectedDate(clickedDate);
@@ -71,19 +74,30 @@ const Calendar: React.FC = () => {
     }
   };
   
-  const handleTaskAssigned = async () => {
+  // Refetch all tasks to update calendar events
+  const fetchAndSetTasks = async () => {
     try {
       const tasksData = await CalendarAPI.fetchAllTasks();
       setEvents(tasksData);
-      setSelectedDate(null);  // Reset selectedDate when task is assigned
     } catch (error) {
       console.error('Error fetching all tasks:', error);
     }
   };
 
+  // Handle task assignment, refetch tasks to update events
+  const handleTaskAssigned = async () => {
+    await fetchAndSetTasks();
+    setSelectedDate(null);  
+  };
+
+  // Handle task deletion or edit, refetch tasks to update events dynamically
+  const handleTaskDeleted = async () => {
+    await fetchAndSetTasks();
+    setShowTaskModal(false);
+  };
+
   const handleCloseTaskModal = () => {
-    setSelectedDate(null);  // Reset selectedDate when modal closes
-    setShowTaskModal(false);  // Close task modal
+    setShowTaskModal(false);
   };
 
   const handleLogout = () => {
@@ -111,7 +125,7 @@ const Calendar: React.FC = () => {
           selectedDate={selectedDate}
           employees={employees}
           onTaskAssigned={handleTaskAssigned}
-          onClose={handleCloseTaskModal}  
+          onClose={() => setSelectedDate(null)} 
         />
       )}
 
@@ -119,8 +133,8 @@ const Calendar: React.FC = () => {
         <UserTask
           tasks={userTasks}
           selectedDate={selectedDate}
-          onClose={handleCloseTaskModal}  
-          onTaskDeleted={() => handleTaskAssigned()} 
+          onClose={handleCloseTaskModal} 
+          onTaskDeleted={handleTaskDeleted}  
           userRole={userRole || 'Employee'} 
         />
       )}

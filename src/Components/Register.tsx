@@ -89,8 +89,8 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
+    <div className="min-h-screen flex items-center justify-center bg-gray-800">
+      <div className="w-full max-w-md p-6  rounded-lg shadow-md bg-slate-500">
         <h2 className="text-2xl font-semibold text-center mb-4">
           Create an Account
         </h2>

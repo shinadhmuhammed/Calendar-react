@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { toast, ToastContainer } from "react-toastify"; 
+import 'react-toastify/dist/ReactToastify.css'; 
 import createAxios from "../../Services/Axios";
 import { Employee } from "../../Types/Type";
 
@@ -6,14 +8,14 @@ interface AssignTaskProps {
   selectedDate: string;
   employees: Employee[];
   onTaskAssigned: () => void;
-  onClose: () => void;  // New onClose prop for closing the modal
+  onClose: () => void; 
 }
 
 const AssignTask: React.FC<AssignTaskProps> = ({
   selectedDate,
   employees,
   onTaskAssigned,
-  onClose, // Destructure onClose prop
+  onClose,
 }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -43,15 +45,15 @@ const AssignTask: React.FC<AssignTaskProps> = ({
         assignedTo,
       });
       console.log(response.data);
-      onTaskAssigned();  // Close the modal when task is assigned
+      toast.success("Task assigned successfully!");
+
+      onTaskAssigned();
+      onClose(); 
     } catch (error) {
       console.error("Error assigning task:", error);
       setError("Failed to assign task.");
+      toast.error("Error assigning task.");
     }
-  };
-
-  const handleCancelClick = () => {
-    onClose();  // Close the modal when cancel is clicked
   };
 
   return (
@@ -111,7 +113,7 @@ const AssignTask: React.FC<AssignTaskProps> = ({
           <div className="flex justify-end space-x-4">
             <button
               type="button"
-              onClick={handleCancelClick}  // Use handleCancelClick here
+              onClick={onClose}
               className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded"
             >
               Cancel
@@ -125,6 +127,8 @@ const AssignTask: React.FC<AssignTaskProps> = ({
           </div>
         </form>
       </div>
+      
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
     </div>
   );
 };
