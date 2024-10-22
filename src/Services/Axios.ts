@@ -3,7 +3,6 @@ import axios from 'axios';
 const createAxios = () => {
   const axiosInstance = axios.create({
     baseURL: 'https://calendar-nodejs.onrender.com',  
-    withCredentials:true
   });
 
   axiosInstance.interceptors.request.use(
