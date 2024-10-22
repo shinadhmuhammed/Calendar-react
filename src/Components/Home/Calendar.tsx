@@ -17,7 +17,7 @@ const Calendar: React.FC = () => {
   const [userRole, setUserRole] = useState<string | null>(null); 
   const navigate = useNavigate();
 
-  // Fetch employees and user role when component mounts
+  
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
@@ -41,7 +41,7 @@ const Calendar: React.FC = () => {
     fetchUserRole();
   }, []);
 
-  // Fetch all tasks and set events in the calendar when the component mounts
+  
   useEffect(() => {
     const fetchTasks = async () => {
       try {
@@ -55,7 +55,7 @@ const Calendar: React.FC = () => {
     fetchTasks();
   }, []);
 
-  // Handle date click and fetch tasks for that specific date
+
   const handleDateClick = async (arg: { dateStr: string }) => { 
     const clickedDate = arg.dateStr;
     setSelectedDate(clickedDate);
@@ -74,7 +74,7 @@ const Calendar: React.FC = () => {
     }
   };
   
-  // Refetch all tasks to update calendar events
+ 
   const fetchAndSetTasks = async () => {
     try {
       const tasksData = await CalendarAPI.fetchAllTasks();
@@ -84,13 +84,12 @@ const Calendar: React.FC = () => {
     }
   };
 
-  // Handle task assignment, refetch tasks to update events
+
   const handleTaskAssigned = async () => {
     await fetchAndSetTasks();
     setSelectedDate(null);  
   };
 
-  // Handle task deletion or edit, refetch tasks to update events dynamically
   const handleTaskDeleted = async () => {
     await fetchAndSetTasks();
     setShowTaskModal(false);
@@ -102,7 +101,7 @@ const Calendar: React.FC = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token'); 
-    navigate('/');
+    navigate('/login');
   };
 
   return (
