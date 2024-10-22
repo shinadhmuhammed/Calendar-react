@@ -81,7 +81,7 @@ const Register: React.FC = () => {
 
     try {
       await registerUser(formData);
-      navigate("/");
+      navigate("/login");
     } catch (error) {
       setError("An error occurred. Please try again later.");
       console.error(error);
